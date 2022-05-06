@@ -2,22 +2,22 @@ defmodule PreHackUIWeb.Router do
   use PreHackUIWeb, :router
 
   pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_live_flash
-    plug :put_root_layout, {PreHackUIWeb.LayoutView, :root}
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_live_flash)
+    plug(:put_root_layout, {PreHackUIWeb.LayoutView, :root})
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug(:accepts, ["json"])
   end
 
   scope "/", PreHackUIWeb do
-    pipe_through :browser
+    pipe_through(:browser)
 
-    get "/", PageController, :index
+    live("/", PreHackLive)
   end
 
   # Other scopes may use custom stacks.
@@ -36,9 +36,9 @@ defmodule PreHackUIWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/" do
-      pipe_through :browser
+      pipe_through(:browser)
 
-      live_dashboard "/dashboard", metrics: PreHackUIWeb.Telemetry
+      live_dashboard("/dashboard", metrics: PreHackUIWeb.Telemetry)
     end
   end
 end

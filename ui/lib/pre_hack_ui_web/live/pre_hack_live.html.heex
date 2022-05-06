@@ -1,0 +1,5 @@
+<svg viewBox="0 0 100 100" class="w-full">
+<%= for {wave, index} <- Enum.with_index(@waves) do %>
+    <circle cx={index + 1 + 0.5} cy="0.5" r="0.5" opacity={wave} fill={"#"<>@color}></circle>
+<% end %>
+</svg>

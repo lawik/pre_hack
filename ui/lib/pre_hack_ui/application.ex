@@ -15,9 +15,8 @@ defmodule PreHackUI.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: PreHackUI.PubSub},
       # Start the Endpoint (http/https)
-      PreHackUIWeb.Endpoint
-      # Start a worker by calling: PreHackUI.Worker.start_link(arg)
-      # {PreHackUI.Worker, arg}
+      PreHackUIWeb.Endpoint,
+      PreHackUI.Actor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
