@@ -3,15 +3,15 @@ defmodule PreHackUIWeb.PreHackLive do
 
   def mount(_params, _session, socket) do
     Phoenix.PubSub.subscribe(PreHackUI.PubSub, "pre-hack-events")
-    {:ok, assign(socket, waves: [], color: [])}
+    {:ok, assign(socket, waves: [])}
   end
 
   def handle_info({:tick, wave}, socket) do
-    waves = Enum.take(socket.assigns.waves, 99)
+    waves = Enum.take(socket.assigns.waves, 200)
 
     %{hex: color} =
-      Chameleon.HSV.new(round(wave * 100), 100, 100) |> Chameleon.convert(Chameleon.Hex)
+      Chameleon.HSV.new(round(wave * 255), 100, 100) |> Chameleon.convert(Chameleon.Hex)
 
-    {:noreply, assign(socket, waves: [wave | waves], color: color)}
+    {:noreply, assign(socket, waves: [{wave, color} | waves])}
   end
 end

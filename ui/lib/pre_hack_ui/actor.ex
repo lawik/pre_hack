@@ -13,7 +13,7 @@ defmodule PreHackUI.Actor do
   def handle_info({:tick, wave}, state) do
     Phoenix.PubSub.broadcast(PreHackUI.PubSub, "pre-hack-events", {:tick, wave})
 
-    wave = (:math.cos(get_milliseconds() / 100) + 1) / 2
+    wave = (:math.cos(round(get_milliseconds() / 1000)) + 1) / 2
     Process.send_after(self(), {:tick, wave}, 100)
     {:noreply, state}
   end
