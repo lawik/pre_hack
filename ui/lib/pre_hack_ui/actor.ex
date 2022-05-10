@@ -53,6 +53,12 @@ defmodule PreHackUI.Actor do
       |> Map.new()
       |> Map.merge(state.items)
 
+    Enum.each(keyed, fn {item_id, item} ->
+      if item_id in item_ids do
+        PreHackUI.Article.upsert(item_id, item)
+      end
+    end)
+
     Phoenix.PubSub.broadcast(PreHackUI.PubSub, "pre-hack-events", {:items, keyed})
     %{state | items: keyed}
   end
