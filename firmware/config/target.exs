@@ -71,6 +71,10 @@ config :vintage_net,
      }}
   ]
 
+hostname =
+  System.get_env("HOSTNAME") ||
+    raise("Missing environment variable HOSTNAME, use something cool, like 'xenomorph'")
+
 config :mdns_lite,
   # The `hosts` key specifies what hostnames mdns_lite advertises.  `:hostname`
   # advertises the device's hostname.local. For the official Nerves systems, this
@@ -80,10 +84,9 @@ config :mdns_lite,
   # because otherwise any of the devices may respond to nerves.local leading to
   # unpredictable behavior.
 
-  hostname = System.get_env("HOSTNAME") ||
-      raise("Missing environment variable HOSTNAME, use something cool, like 'xenomorph'")
   hosts: [
-    :hostname, hostname
+    :hostname,
+    hostname
   ],
   ttl: 120,
 
@@ -106,8 +109,17 @@ config :mdns_lite,
     }
   ]
 
+config :pre_hack_ui,
+  namespace: PreHackUI,
+  ecto_repos: [PreHackUI.Repo]
+
+config :pre_hack_ui, PreHackUI.Repo,
+  database: "/root/database.db",
+  pool_size: 5,
+  show_sensitive_data_on_connection_error: true
+
 # config from the nerves UI guide
-config :prehack_ui, PreHackUIWeb.Endpoint,
+config :pre_hack_ui, PreHackUIWeb.Endpoint,
   url: [host: "#{hostname}.local"],
   http: [port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json",
