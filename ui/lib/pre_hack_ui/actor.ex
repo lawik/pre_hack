@@ -2,24 +2,64 @@ defmodule PreHackUI.Actor do
   use GenServer
 
   def start_link(_) do
-    GenServer.start_link(__MODULE__, nil)
+    GenServer.start_link(__MODULE__, nil, name: PreHackUI.Actor)
   end
 
   def init(_) do
-    send(self(), {:tick, 0.0})
-    {:ok, nil}
+    send(self(), :load)
+    {:ok, %{frontpage: [], new: [], items: %{}, max_item: nil}}
   end
 
-  def handle_info({:tick, wave}, state) do
-    Phoenix.PubSub.broadcast(PreHackUI.PubSub, "pre-hack-events", {:tick, wave})
+  def handle_call(:get, _from, state) do
+    {:reply, state, state}
+  end
 
-    wave = (:math.cos(round(get_milliseconds() / 1000)) + 1) / 2
-    Process.send_after(self(), {:tick, wave}, 100)
+  def handle_info(:load, state) do
+    state =
+      state
+      |> get_front_page()
+      |> get_new()
+      |> get_max_item()
+      |> get_items()
+
+    Process.send_after(self(), :load, 1000)
     {:noreply, state}
   end
 
-  def get_milliseconds do
-    {mega, sec, micro} = :os.timestamp()
-    (mega * 1_000_000 + sec) * 1000 + round(micro / 1000)
+  defp get_front_page(state) do
+    frontpage = PreHackUI.HackerNews.get_front_page()
+    Phoenix.PubSub.broadcast(PreHackUI.PubSub, "pre-hack-events", {:frontpage, frontpage})
+    %{state | frontpage: frontpage}
+  end
+
+  defp get_new(state) do
+    new = PreHackUI.HackerNews.get_new()
+    Phoenix.PubSub.broadcast(PreHackUI.PubSub, "pre-hack-events", {:new, new})
+    %{state | new: new}
+  end
+
+  defp get_items(state) do
+    item_ids =
+      [state.max_item | state.frontpage ++ state.new]
+      |> Enum.reject(fn item_id ->
+        Map.has_key?(state.items, item_id)
+      end)
+
+    items = PreHackUI.HackerNews.get_items(item_ids)
+
+    keyed =
+      [item_ids, items]
+      |> Enum.zip()
+      |> Map.new()
+      |> Map.merge(state.items)
+
+    Phoenix.PubSub.broadcast(PreHackUI.PubSub, "pre-hack-events", {:items, keyed})
+    %{state | items: keyed}
+  end
+
+  defp get_max_item(state) do
+    max = PreHackUI.HackerNews.max_item()
+    Phoenix.PubSub.broadcast(PreHackUI.PubSub, "pre-hack-events", {:max_item, max})
+    %{state | max_item: max}
   end
 end

@@ -3,15 +3,26 @@ defmodule PreHackUIWeb.PreHackLive do
 
   def mount(_params, _session, socket) do
     Phoenix.PubSub.subscribe(PreHackUI.PubSub, "pre-hack-events")
-    {:ok, assign(socket, waves: [])}
+
+    %{frontpage: frontpage, new: new, items: items, max_item: max} =
+      GenServer.call(PreHackUI.Actor, :get)
+
+    {:ok, assign(socket, frontpage: frontpage, new: new, items: items, max_item: max)}
   end
 
-  def handle_info({:tick, wave}, socket) do
-    waves = Enum.take(socket.assigns.waves, 200)
+  def handle_info({:frontpage, frontpage}, socket) do
+    {:noreply, assign(socket, frontpage: frontpage)}
+  end
 
-    %{hex: color} =
-      Chameleon.HSV.new(round(wave * 255), 100, 100) |> Chameleon.convert(Chameleon.Hex)
+  def handle_info({:new, new}, socket) do
+    {:noreply, assign(socket, new: new)}
+  end
 
-    {:noreply, assign(socket, waves: [{wave, color} | waves])}
+  def handle_info({:max_item, max}, socket) do
+    {:noreply, assign(socket, max_item: max)}
+  end
+
+  def handle_info({:items, items}, socket) do
+    {:noreply, assign(socket, items: items)}
   end
 end

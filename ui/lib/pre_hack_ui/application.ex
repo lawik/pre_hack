@@ -16,6 +16,7 @@ defmodule PreHackUI.Application do
       {Phoenix.PubSub, name: PreHackUI.PubSub},
       # Start the Endpoint (http/https)
       PreHackUIWeb.Endpoint,
+      {Finch, name: PreHack.Finch},
       PreHackUI.Actor
     ]
 

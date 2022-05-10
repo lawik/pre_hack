@@ -50,7 +50,8 @@ defmodule PreHackUI.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:input_event, "~> 1.0"},
-      {:chameleon, "~> 2.5"}
+      {:chameleon, "~> 2.5"},
+      {:finch, "~> 0.12"}
     ]
   end
 
