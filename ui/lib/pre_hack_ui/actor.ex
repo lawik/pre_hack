@@ -24,6 +24,10 @@ defmodule PreHackUI.Actor do
 
     Process.send_after(self(), :load, 1000)
     {:noreply, state}
+  rescue
+    _ ->
+      Process.send_after(self(), :load, 1000)
+      {:noreply, state}
   end
 
   defp get_front_page(state) do
