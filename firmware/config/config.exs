@@ -26,6 +26,9 @@ config :nerves, source_date_epoch: "1652185788"
 
 config :logger, backends: [RingLogger]
 
+# Use Jason for JSON parsing in Phoenix
+config :phoenix, :json_library, Jason
+
 if Mix.target() == :host or Mix.target() == :"" do
   import_config "host.exs"
 else
